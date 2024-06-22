@@ -60,7 +60,7 @@ resource "aws_launch_template" "blog" {
 
   network_interfaces {
     associate_public_ip_address = true
-    security_groups             = [module.blog_sgg.security_group_id]
+    security_groups             = [module.blog_sg.security_group_id]
   }
 
   lifecycle {
