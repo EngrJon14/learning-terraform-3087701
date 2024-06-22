@@ -84,7 +84,7 @@ module "autoscaling" {
 module "blog_alb" {
   source  = "terraform-aws-modules/alb/aws"
   version = "6.0"
-  name    = "blog-alb"
+  name    = "blog-albs"
 
   vpc_id                      = module.blog_vpc.vpc_id
   subnets                     = module.blog_vpc.public_subnets
