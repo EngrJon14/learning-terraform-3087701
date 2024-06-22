@@ -1,3 +1,7 @@
+provider "aws" {
+  region = "us-west-2"
+}
+
 data "aws_ami" "app_ami" {
   most_recent = true
 
@@ -73,8 +77,12 @@ module "autoscaling" {
   version = "7.6.1"
   name = "blog"
 
+  aws_launch_template = aws_launch_template.blog.id
+  launch_template_version   = "$Latest"
+
   min_size = 1
-  max_size = 2 
+  max_size = 3 
+  desired_capacity = 2
 
   vpc_zone_identifier = module.blog_vpc.public_subnets
   target_group_arns = module.blog_alb.target_group_arns
