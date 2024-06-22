@@ -56,7 +56,7 @@ resource "aws_security_group" "blog" {
 resource "aws_launch_template" "blog_template" {
   name          = "blog_launch_template"
   image_id      = data.aws_ami.app_ami.id
-  instance_type = "t2.micro"
+  instance_type = var.instance_type
 
   network_interfaces {
     associate_public_ip_address = true
