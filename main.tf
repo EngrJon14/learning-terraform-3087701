@@ -53,7 +53,7 @@ resource "aws_security_group" "blog" {
   vpc_id = data.aws_vpc.default.id
 }
 
-resource "aws_launch_template" "blog" {
+resource "aws_launch_template" "blog_template" {
   name          = "blog_template-launch-template"
   image_id      = data.aws_ami.app_ami.id
   instance_type = "t2.micro"
@@ -73,7 +73,7 @@ module "autoscaling" {
   version = "7.6.1"
   name = "blog"
 
-  aws_launch_template = aws_launch_template.blog.id
+  aws_launch_template = aws_launch_template.blog_template.id
   launch_template_version   = "$Latest"
 
   min_size = 1
