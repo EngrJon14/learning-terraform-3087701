@@ -31,17 +31,6 @@ module "blog_vpc" {
     Terraform = "true"
     Environment = "dev"
   }
-
-resource "aws_instance" "blog" {
-  ami                    = data.aws_ami.app_ami.id
-  instance_type          = var.instance_type
-  vpc_security_group_ids = [module.blog_sg.security_group_id]
-
-  subnet_id = module.blog_vpc.public_subnets[0]
-
-  tags = {
-    Name = "Learning Terraform"
-  }
 }
 
 module "blog_sg" {
@@ -63,5 +52,17 @@ resource "aws_security_group" "blog" {
 
   vpc_id = data.aws_vpc.default.id
 }
+
+resource "aws_instance" "blog" {
+  ami                    = data.aws_ami.app_ami.id
+  instance_type          = var.instance_type
+  vpc_security_group_ids = [module.blog_sg.security_group_id]
+
+  subnet_id = module.blog_vpc.public_subnets[0]
+
+  tags = {
+    Name = "Learning Terraform"
+  }
+
 
 }
