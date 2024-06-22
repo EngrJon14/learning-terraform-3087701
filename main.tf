@@ -24,11 +24,11 @@ module "blog_vpc" {
   name = "dev-vpc"
   cidr = "10.0.0.0/16"
 
-  azs             = ["us-west-2a","us-west-2b", "us-west-2c"]
-  public_subnets  = ["10.0.101.0/24","10.0.102.0/24","10.0.103.0/24"]
+  azs             = ["us-west-2a", "us-west-2b", "us-west-2c"]
+  public_subnets  = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
 
   tags = {
-    Terraform = "true"
+    Terraform   = "true"
     Environment = "dev"
   }
 }
@@ -39,7 +39,7 @@ module "blog_sg" {
   name    = "blog_new"
 
   vpc_id               = module.blog_vpc.vpc_id
-  ingress_rules        = ["http-80-tcp","https-443-tcp"]
+  ingress_rules        = ["http-80-tcp", "https-443-tcp"]
   ingress_cidr_blocks  = ["0.0.0.0/0"]
 
   egress_rules         = ["all-all"]
@@ -54,7 +54,7 @@ resource "aws_security_group" "blog" {
 }
 
 resource "aws_launch_template" "blog_template" {
-  name          = "blog_template-launch-template"
+  name          = "blog_launch_template"
   image_id      = data.aws_ami.app_ami.id
   instance_type = "t2.micro"
 
@@ -68,31 +68,14 @@ resource "aws_launch_template" "blog_template" {
   }
 }
 
-module "autoscaling" {
-  source  = "terraform-aws-modules/autoscaling/aws"
-  version = "7.6.1"
-  name = "blog"
-
-  aws_launch_template = var.aws_launch_template.blog_template.id
-  launch_template_version   = "$Latest"
-
-  min_size = 1
-  max_size = 3 
-  desired_capacity = 2
-
-  vpc_zone_identifier = module.blog_vpc.public_subnets
-  target_group_arns = module.blog_alb.target_group_arns
-
-}
-
 module "blog_alb" {
   source  = "terraform-aws-modules/alb/aws"
   version = "6.0"
   name    = "blog-albs"
 
-  vpc_id                      = module.blog_vpc.vpc_id
-  subnets                     = module.blog_vpc.public_subnets
-  security_groups             = [module.blog_sg.security_group_id]
+  vpc_id          = module.blog_vpc.vpc_id
+  subnets         = module.blog_vpc.public_subnets
+  security_groups = [module.blog_sg.security_group_id]
 
   target_groups = [
     {
@@ -100,7 +83,7 @@ module "blog_alb" {
       backend_protocol = "HTTP"
       backend_port     = 80
       target_type      = "instance"
-      }
+    }
   ]
 
   http_tcp_listeners = [
@@ -116,5 +99,18 @@ module "blog_alb" {
   }
 }
 
+module "autoscaling" {
+  source  = "terraform-aws-modules/autoscaling/aws"
+  version = "7.6.1"
+  name    = "blog"
 
-  
+  aws_launch_template       = aws_launch_template.blog_template.id
+  launch_template_version   = "$Latest"
+
+  min_size         = 1
+  max_size         = 3
+  desired_capacity = 2
+
+  vpc_zone_identifier = module.blog_vpc.public_subnets
+  target_group_arns   = module.blog_alb.target_group_arns
+}
