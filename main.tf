@@ -53,17 +53,17 @@ resource "aws_security_group" "blog" {
   vpc_id = data.aws_vpc.default.id
 }
 
-module "autoscaling_example_complete" {
-  source  = "terraform-aws-modules/autoscaling/aws//examples/complete"
+module "autoscaling" {
+  source  = "terraform-aws-modules/autoscaling/aws"
   version = "7.6.1"
 
-  name = "blog-alb"
+  default_autoscaling_group_name = "blog-alb"
   default_autoscaling_group_min_size = 1
   default_autoscaling_group_max_size = 2 
 
   default_autoscaling_group_vpc_zone_identifier = module.blog_vpc.public_subnets
   default_autoscaling_group_target_group_arns = module.blog_alb.target_group_arns
-  vpc_id                                      = module.blog_vpc.vpc_id
+  vpc_id                                       = module.blog_vpc.vpc_id
 
 }
 
