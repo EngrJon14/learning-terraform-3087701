@@ -5,5 +5,5 @@ variable "instance_type" {
 
 variable "launch_template_id" {
   description = "The ID of the launch template"
-  type        = lt-0d9e653067a573618
+  type        = string
 }
