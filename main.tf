@@ -53,6 +53,21 @@ resource "aws_security_group" "blog" {
   vpc_id = data.aws_vpc.default.id
 }
 
+resource "aws_launch_template" "blog" {
+  name          = "blog_template-launch-template"
+  image_id      = data.aws_ami.app_ami.id
+  instance_type = "t2.micro"
+
+  network_interfaces {
+    associate_public_ip_address = true
+    security_groups             = [module.blog_sgg.security_group_id]
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
 module "autoscaling" {
   source  = "terraform-aws-modules/autoscaling/aws"
   version = "7.6.1"
@@ -63,7 +78,6 @@ module "autoscaling" {
 
   default_autoscaling_group_vpc_zone_identifier = module.blog_vpc.public_subnets
   default_autoscaling_group_target_group_arns = module.blog_alb.target_group_arns
-  vpc_id                                       = module.blog_vpc.vpc_id
 
 }
 
@@ -86,11 +100,6 @@ module "blog_alb" {
       backend_protocol = "HTTP"
       backend_port     = 80
       target_type      = "instance"
-      targets = {
-        my_target = {
-          target_id = aws_instance.blog.id
-          port      = 80
-        }
       }
     }
   ]
