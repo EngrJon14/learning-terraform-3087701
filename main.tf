@@ -53,21 +53,6 @@ resource "aws_security_group" "blog" {
   vpc_id = data.aws_vpc.default.id
 }
 
-resource "aws_launch_template" "blog_template" {
-  name          = "blog_template-launch-template"
-  image_id      = data.aws_ami.app_ami.id
-  instance_type = "t2.micro"
-
-  network_interfaces {
-    associate_public_ip_address = true
-    security_groups             = [module.blog_sg.security_group_id]
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
 module "blog_alb" {
   source  = "terraform-aws-modules/alb/aws"
   version = "6.0"
@@ -83,6 +68,7 @@ module "blog_alb" {
       backend_protocol = "HTTP"
       backend_port     = 80
       target_type      = "instance"
+
     }
   ]
 
