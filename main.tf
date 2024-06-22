@@ -54,9 +54,9 @@ resource "aws_security_group" "blog" {
 }
 
 resource "aws_launch_template" "blog_template" {
-  name          = "blog_launch_template"
+  name          = "blog_template-launch-template"
   image_id      = data.aws_ami.app_ami.id
-  instance_type = var.instance_type
+  instance_type = "var.instance_type"
 
   network_interfaces {
     associate_public_ip_address = true
