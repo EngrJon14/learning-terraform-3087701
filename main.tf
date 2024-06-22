@@ -85,15 +85,28 @@ module "blog_alb" {
   }
 }
 
+resource "aws_launch_template" "blog_template" {
+  name          = "blog_template-launch-template"
+  image_id      = data.aws_ami.app_ami.id
+  instance_type = "t2.micro"  # Specify your desired instance type
+
+  network_interfaces {
+    associate_public_ip_address = true
+    security_groups             = [module.blog_sg.security_group_id]
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
 module "autoscaling" {
   source  = "terraform-aws-modules/autoscaling/aws"
   version = "7.6.1"
   name    = "blog"
 
-  launch_template = {
-    id      = aws_launch_template.blog_template.id
-    version = "$Latest"  # Use the latest version of the launch template
-  }
+  launch_template_id       = aws_launch_template.blog_template.id
+  launch_template_version  = "$Latest"  # Use the latest version of the launch template
 
   min_size         = 1
   max_size         = 3
@@ -101,4 +114,4 @@ module "autoscaling" {
 
   vpc_zone_identifier = module.blog_vpc.public_subnets
   target_group_arns   = module.blog_alb.target_group_arns
-}
+  }
