@@ -73,11 +73,11 @@ module "autoscaling" {
   version = "7.6.1"
   name = "blog"
 
-  default_autoscaling_group_min_size = 1
-  default_autoscaling_group_max_size = 2 
+  min_size = 1
+  max_size = 2 
 
-  default_autoscaling_group_vpc_zone_identifier = module.blog_vpc.public_subnets
-  default_autoscaling_group_target_group_arns = module.blog_alb.target_group_arns
+  vpc_zone_identifier = module.blog_vpc.public_subnets
+  target_group_arns = module.blog_alb.target_group_arns
 
 }
 
