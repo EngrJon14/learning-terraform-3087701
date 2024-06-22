@@ -73,7 +73,7 @@ module "autoscaling" {
   version = "7.6.1"
   name = "blog"
 
-  aws_launch_template = aws_launch_template.blog_template.id
+  aws_launch_template = var.aws_launch_template.blog_template.id
   launch_template_version   = "$Latest"
 
   min_size = 1
