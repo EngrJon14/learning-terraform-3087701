@@ -56,8 +56,8 @@ resource "aws_security_group" "blog" {
 module "autoscaling" {
   source  = "terraform-aws-modules/autoscaling/aws"
   version = "7.6.1"
-  name = "blog-alb"
-  
+  name = "blog"
+
   default_autoscaling_group_min_size = 1
   default_autoscaling_group_max_size = 2 
 
