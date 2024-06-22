@@ -56,7 +56,7 @@ resource "aws_security_group" "blog" {
 resource "aws_launch_template" "blog_template" {
   name          = "blog_template-launch-template"
   image_id      = data.aws_ami.app_ami.id
-  instance_type = "var.instance_type"
+  instance_type = "t2.micro"
 
   network_interfaces {
     associate_public_ip_address = true
@@ -104,8 +104,10 @@ module "autoscaling" {
   version = "7.6.1"
   name    = "blog"
 
-  aws_launch_template       = aws_launch_template.blog_template.id
-  launch_template_version   = "$Latest"
+  launch_template = {
+    id      = aws_launch_template.blog_template.id
+    version = "$Latest"
+  }
 
   min_size         = 1
   max_size         = 3
